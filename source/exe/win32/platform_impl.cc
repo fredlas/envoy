@@ -19,6 +19,8 @@ PlatformImpl::PlatformImpl()
   RELEASE_ASSERT(rc == 0, "WSAStartup failed with error");
 }
 
-PlatformImpl::~PlatformImpl() { ::WSACleanup(); }
+~PlatformImpl() { ::WSACleanup(); }
+
+}; // namespace Envoy
 
 } // namespace Envoy

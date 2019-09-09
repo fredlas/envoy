@@ -2,7 +2,7 @@
 
 #include <functional>
 
-#include "envoy/config/xds_grpc_context.h"
+#include "envoy/config/grpc_mux.h"
 #include "envoy/grpc/async_client.h"
 
 #include "common/common/backoff_strategy.h"
@@ -28,6 +28,7 @@ public:
         service_method_(service_method), control_plane_stats_(generateControlPlaneStats(scope)),
         random_(random), time_source_(dispatcher.timeSource()),
         rate_limiting_enabled_(rate_limit_settings.enabled_) {
+          std::cerr<<"GrpcStream constructed"<<std::endl;
     retry_timer_ = dispatcher.createTimer([this]() -> void { establishNewStream(); });
     if (rate_limiting_enabled_) {
       // Default Bucket contains 100 tokens maximum and refills at 10 tokens/sec.
@@ -38,6 +39,7 @@ public:
     backoff_strategy_ = std::make_unique<JitteredBackOffStrategy>(RETRY_INITIAL_DELAY_MS,
                                                                   RETRY_MAX_DELAY_MS, random_);
   }
+  ~GrpcStream() {std::cerr<<"GrpcStream destroyed"<<std::endl;}
 
   void establishNewStream() {
     ENVOY_LOG(debug, "Establishing new gRPC bidi stream for {}", service_method_.DebugString());
@@ -91,6 +93,8 @@ public:
     setRetryTimer();
   }
 
+//    void maybeUpdateQueueSizeStat(uint64_t ) {} // NOOP TODO
+
   void maybeUpdateQueueSizeStat(uint64_t size) {
     // Although request_queue_.push() happens elsewhere, the only time the queue is non-transiently
     // non-empty is when it remains non-empty after a drain attempt. (The push() doesn't matter
@@ -114,6 +118,8 @@ public:
     drain_request_timer_->enableTimer(limit_request_->nextTokenAvailable());
     return false;
   }
+
+  int vinny_the_variable_ = 0;
 
 private:
   void setRetryTimer() {

@@ -129,8 +129,7 @@ public:
             [&](Http::StreamDecoder& decoder,
                 Http::ConnectionPool::Callbacks& callbacks) -> Http::ConnectionPool::Cancellable* {
               response_decoder = &decoder;
-              callbacks.onPoolReady(encoder, context_.cluster_manager_.conn_pool_.host_,
-                                    stream_info_);
+              callbacks.onPoolReady(encoder, context_.cluster_manager_.conn_pool_.host_);
               return nullptr;
             }));
     expectResponseTimerCreate();
@@ -162,8 +161,7 @@ public:
             [&](Http::StreamDecoder& decoder,
                 Http::ConnectionPool::Callbacks& callbacks) -> Http::ConnectionPool::Cancellable* {
               response_decoder = &decoder;
-              callbacks.onPoolReady(encoder1, context_.cluster_manager_.conn_pool_.host_,
-                                    stream_info_);
+              callbacks.onPoolReady(encoder1, context_.cluster_manager_.conn_pool_.host_);
               return nullptr;
             }));
     expectPerTryTimerCreate();
@@ -189,8 +187,7 @@ public:
               response_decoder = &decoder;
               EXPECT_CALL(context_.cluster_manager_.conn_pool_.host_->outlier_detector_,
                           putResult(Upstream::Outlier::Result::LOCAL_ORIGIN_CONNECT_SUCCESS, _));
-              callbacks.onPoolReady(encoder2, context_.cluster_manager_.conn_pool_.host_,
-                                    stream_info_);
+              callbacks.onPoolReady(encoder2, context_.cluster_manager_.conn_pool_.host_);
               return nullptr;
             }));
     expectPerTryTimerCreate();
@@ -217,7 +214,6 @@ public:
   NiceMock<Http::MockStreamDecoderFilterCallbacks> callbacks_;
   std::shared_ptr<FilterConfig> config_;
   std::shared_ptr<TestFilter> router_;
-  NiceMock<StreamInfo::MockStreamInfo> stream_info_;
 };
 
 TEST_F(RouterUpstreamLogTest, NoLogConfigured) {

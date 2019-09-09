@@ -253,6 +253,7 @@ public:
       const std::vector<std::string>& expected_resource_unsubscriptions, FakeStreamPtr& stream,
       const Protobuf::int32 expected_error_code = Grpc::Status::GrpcStatus::Ok,
       const std::string& expected_error_message = "");
+
   AssertionResult compareSotwDiscoveryRequest(
       const std::string& expected_type_url, const std::string& expected_version,
       const std::vector<std::string>& expected_resource_names, bool expect_node = false,
@@ -268,8 +269,11 @@ public:
     for (const auto& message : messages) {
       discovery_response.add_resources()->PackFrom(message);
     }
+    static int next_nonce_counter = 0;
+    discovery_response.set_nonce(absl::StrCat("nonce", next_nonce_counter++));
     xds_stream_->sendGrpcMessage(discovery_response);
   }
+
   template <class T>
   void
   sendDeltaDiscoveryResponse(const std::string& type_url, const std::vector<T>& added_or_updated,
@@ -293,7 +297,8 @@ public:
       resource->mutable_resource()->PackFrom(message);
     }
     *response.mutable_removed_resources() = {removed.begin(), removed.end()};
-    response.set_nonce("noncense");
+    static int next_nonce_counter = 0;
+    response.set_nonce(absl::StrCat("nonce", next_nonce_counter++));
     stream->sendGrpcMessage(response);
   }
 

@@ -8,7 +8,6 @@ namespace Envoy {
 class PlatformImpl {
 public:
   PlatformImpl();
-  ~PlatformImpl();
   Thread::ThreadFactory& threadFactory() { return *thread_factory_; }
   Filesystem::Instance& fileSystem() { return *file_system_; }
 

@@ -126,7 +126,5 @@ public:
   virtual std::string tlsVersion() const PURE;
 };
 
-using ConnectionInfoConstSharedPtr = std::shared_ptr<const ConnectionInfo>;
-
 } // namespace Ssl
 } // namespace Envoy

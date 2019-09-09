@@ -13,7 +13,7 @@ namespace Envoy {
 namespace {
 
 class ScopedRdsIntegrationTest : public HttpIntegrationTest,
-                                 public Grpc::DeltaSotwGrpcClientIntegrationParamTest {
+                                 public Grpc::DeltaSotwIntegrationParamTest {
 protected:
   struct FakeUpstreamInfo {
     FakeHttpConnectionPtr connection_;
@@ -217,6 +217,8 @@ fragments:
         response);
   }
 
+  bool isDelta() { return sotwOrDelta() == Grpc::SotwOrDelta::Delta; }
+
   const std::string srds_config_name_{"foo-scoped-routes"};
   FakeUpstreamInfo scoped_rds_upstream_info_;
   FakeUpstreamInfo rds_upstream_info_;
@@ -246,7 +248,7 @@ key:
         - match: {{ prefix: "/" }}
           route: {{ cluster: {} }}
 )EOF";
-
+std::cerr<<"hmm1"<<std::endl;
   on_server_init_function_ = [&]() {
     createScopedRdsStream();
     sendSrdsResponse({scope_route1, scope_route2}, {scope_route1, scope_route2}, {}, "1");
@@ -256,7 +258,7 @@ key:
   };
   initialize();
   registerTestServerPorts({"http"});
-
+std::cerr<<"hmm2"<<std::endl;
   // No scope key matches "xyz-route".
   codec_client_ = makeHttpConnection(lookupPort("http"));
   auto response = codec_client_->makeHeaderOnlyRequest(
@@ -268,7 +270,7 @@ key:
   response->waitForEndStream();
   verifyResponse(std::move(response), "404", Http::TestHeaderMapImpl{}, "route scope not found");
   cleanupUpstreamAndDownstream();
-
+std::cerr<<"hmm3"<<std::endl;
   // Test "foo-route" and 'bar-route' both gets routed to cluster_0.
   test_server_->waitForCounterGe("http.config_test.rds.foo_route1.update_success", 1);
   for (const std::string& scope_key : std::vector<std::string>{"foo-route", "bar-route"}) {
@@ -288,7 +290,7 @@ key:
   // The version gauge should be set to xxHash64("1").
   test_server_->waitForGaugeEq("http.config_test.scoped_rds.foo-scoped-routes.version",
                                13237225503670494420UL);
-
+std::cerr<<"hmm4"<<std::endl;
   // Add a new scope scope_route3 with a brand new RouteConfiguration foo_route2.
   const std::string scope_route3 = fmt::format(scope_tmpl, "foo_scope3", "foo_route2", "baz-route");
 
@@ -356,7 +358,7 @@ key:
   // But scope is found and the Router::NullConfigImpl is returned.
   verifyResponse(std::move(response), "404", Http::TestHeaderMapImpl{}, "");
   cleanupUpstreamAndDownstream();
-
+std::cerr<<"hmm5"<<std::endl;
   // RDS updated foo_route4, requests with scope key "xyz-route" now hit cluster_1.
   test_server_->waitForCounterGe("http.config_test.rds.foo_route4.update_attempt", 1);
   createRdsStream("foo_route4");
@@ -370,6 +372,7 @@ key:
                               {"Addr", "x-foo-key=xyz-route"}},
       456, Http::TestHeaderMapImpl{{":status", "200"}, {"service", "xyz-route"}}, 123,
       /*cluster_1 */ 1);
+  std::cerr<<"hmm6"<<std::endl;
 }
 
 // Test that a bad config update updates the corresponding stats.

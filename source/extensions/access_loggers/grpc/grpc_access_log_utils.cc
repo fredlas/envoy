@@ -129,8 +129,7 @@ void Utility::extractCommonAccessLogProperties(
   }
   if (stream_info.downstreamSslConnection() != nullptr) {
     auto* tls_properties = common_access_log.mutable_tls_properties();
-    const Ssl::ConnectionInfoConstSharedPtr downstream_ssl_connection =
-        stream_info.downstreamSslConnection();
+    const auto* downstream_ssl_connection = stream_info.downstreamSslConnection();
 
     tls_properties->set_tls_sni_hostname(stream_info.requestedServerName());
 
