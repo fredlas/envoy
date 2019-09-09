@@ -18,7 +18,9 @@ NewGrpcMuxImpl::NewGrpcMuxImpl(Grpc::RawAsyncClientPtr&& async_client,
                                const LocalInfo::LocalInfo& local_info)
     : dispatcher_(dispatcher), local_info_(local_info),
       grpc_stream_(this, std::move(async_client), service_method, random, dispatcher, scope,
-                   rate_limit_settings) {std::cerr<<"creating NewGrpcMuxImpl"<<std::endl;}
+                   rate_limit_settings) {
+  std::cerr << "creating NewGrpcMuxImpl" << std::endl;
+}
 
 Watch* NewGrpcMuxImpl::addOrUpdateWatch(const std::string& type_url, Watch* watch,
                                         const std::set<std::string>& resources,
@@ -150,12 +152,12 @@ void NewGrpcMuxImpl::addSubscription(const std::string& type_url,
 }
 
 void NewGrpcMuxImpl::trySendDiscoveryRequests() {
-  std::cerr<<"trySendDiscoveryRequests START"<<std::endl;
+  std::cerr << "trySendDiscoveryRequests START" << std::endl;
   while (true) {
     // Do any of our subscriptions even want to send a request?
     absl::optional<std::string> maybe_request_type = whoWantsToSendDiscoveryRequest();
     if (!maybe_request_type.has_value()) {
-      std::cerr<<"trySendDiscoveryRequests NOBODY"<<std::endl;
+      std::cerr << "trySendDiscoveryRequests NOBODY" << std::endl;
       grpc_stream_.vinny_the_variable_++;
       break;
     }
@@ -174,27 +176,27 @@ void NewGrpcMuxImpl::trySendDiscoveryRequests() {
     }
     // Try again later if paused/rate limited/stream down.
     if (!canSendDiscoveryRequest(next_request_type_url)) {
-      std::cerr<<"trySendDiscoveryRequests CANT"<<std::endl;
+      std::cerr << "trySendDiscoveryRequests CANT" << std::endl;
       break;
     }
     // Get our subscription state to generate the appropriate DeltaDiscoveryRequest, and send.
     if (!pausable_ack_queue_.empty()) {
       // Because ACKs take precedence over plain requests, if there is anything in the queue, it's
       // safe to assume it's of the type_url that we're wanting to send.
-      std::cerr<<"trySendDiscoveryRequests ACK"<<std::endl;
+      std::cerr << "trySendDiscoveryRequests ACK" << std::endl;
       grpc_stream_.sendMessage(
           sub->second->sub_state_.getNextRequestWithAck(pausable_ack_queue_.front()));
       pausable_ack_queue_.pop();
     } else {
-      std::cerr<<"trySendDiscoveryRequests ACKLESS"<<std::endl;
+      std::cerr << "trySendDiscoveryRequests ACKLESS" << std::endl;
       grpc_stream_.sendMessage(sub->second->sub_state_.getNextRequestAckless());
     }
   }
-  std::cerr<<"trySendDiscoveryRequests ABOUT TO VINNY"<<std::endl;
-  std::cerr<<grpc_stream_.vinny_the_variable_<<std::endl;
-  std::cerr<<"trySendDiscoveryRequests ABOUT TO UPDATE"<<std::endl;
+  std::cerr << "trySendDiscoveryRequests ABOUT TO VINNY" << std::endl;
+  std::cerr << grpc_stream_.vinny_the_variable_ << std::endl;
+  std::cerr << "trySendDiscoveryRequests ABOUT TO UPDATE" << std::endl;
   grpc_stream_.maybeUpdateQueueSizeStat(pausable_ack_queue_.size());
-  std::cerr<<"trySendDiscoveryRequests DONE UPDATE"<<std::endl;
+  std::cerr << "trySendDiscoveryRequests DONE UPDATE" << std::endl;
 }
 
 // Checks whether external conditions allow sending a DeltaDiscoveryRequest. (Does not check

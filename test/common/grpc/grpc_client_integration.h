@@ -98,7 +98,8 @@ public:
                    testing::Values(Grpc::ClientType::EnvoyGrpc))
 #define DELTA_SOTW_GRPC_CLIENT_INTEGRATION_PARAMS                                                  \
   testing::Combine(testing::ValuesIn(TestEnvironment::getIpVersionsForTest()),                     \
-                   testing::Values(Grpc::ClientType::EnvoyGrpc), testing::Values(Grpc::SotwOrDelta::Sotw, Grpc::SotwOrDelta::Delta))
+                   testing::Values(Grpc::ClientType::EnvoyGrpc),                                   \
+                   testing::Values(Grpc::SotwOrDelta::Sotw, Grpc::SotwOrDelta::Delta))
 #endif // ENVOY_GOOGLE_GRPC
 
 //#define DELTA_INTEGRATION_PARAMS                                                                   \

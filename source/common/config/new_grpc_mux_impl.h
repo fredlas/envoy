@@ -28,7 +28,7 @@ public:
                  const Protobuf::MethodDescriptor& service_method, Runtime::RandomGenerator& random,
                  Stats::Scope& scope, const RateLimitSettings& rate_limit_settings,
                  const LocalInfo::LocalInfo& local_info);
-  ~NewGrpcMuxImpl() {std::cerr<<"destroying NewGrpcMuxImpl"<<std::endl;}
+  ~NewGrpcMuxImpl() { std::cerr << "destroying NewGrpcMuxImpl" << std::endl; }
 
   Watch* addOrUpdateWatch(const std::string& type_url, Watch* watch,
                           const std::set<std::string>& resources, SubscriptionCallbacks& callbacks,

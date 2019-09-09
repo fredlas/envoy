@@ -26,7 +26,8 @@ using testing::AssertionResult;
 
 namespace Envoy {
 
-INSTANTIATE_TEST_SUITE_P(IpVersionsClientTypeDelta, AdsIntegrationTest, DELTA_SOTW_GRPC_CLIENT_INTEGRATION_PARAMS);
+INSTANTIATE_TEST_SUITE_P(IpVersionsClientTypeDelta, AdsIntegrationTest,
+                         DELTA_SOTW_GRPC_CLIENT_INTEGRATION_PARAMS);
 
 // Validate basic config delivery and upgrade.
 TEST_P(AdsIntegrationTest, Basic) {
